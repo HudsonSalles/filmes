@@ -12,11 +12,12 @@ import {
 
 interface SliderItemProps {
     data: any;
+    navigatePage: any;
 }
 
-const SliderItem: React.FC<SliderItemProps> = ({ data }) => {
+const SliderItem: React.FC<SliderItemProps> = ({ data, navigatePage }) => {
     return (
-        <Container activeOpacity={0.7}>
+        <Container activeOpacity={0.7} onPress={() => navigatePage(data)}>
             <BannerItem
                 source={{ uri: `https://image.tmdb.org/t/p/original/${data.poster_path}` }}
             />
