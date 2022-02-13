@@ -8,7 +8,7 @@ import {
     RateContainer,
     Rate,
 
-} from './style';
+} from './styles';
 
 interface SliderItemProps {
     data: any;
