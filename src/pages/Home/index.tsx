@@ -32,7 +32,8 @@ const Home: React.FC<HomeProps> = () => {
     const [nowMovies, setNowMovies] = useState([1]);
     const [popularMovies, setPopularMovies] = useState([1]);
     const [topMovies, setTopMovies] = useState([1]);
-    const [bannerMovie, setBannerMovie] = useState({});
+    const [bannerMovie, setBannerMovie] = useState<any>({});
+    const [input, setInput] = useState<string>('');
 
     const [loading, setLoading] = useState<boolean>(true);
 
@@ -92,7 +93,14 @@ const Home: React.FC<HomeProps> = () => {
     }, [])
 
     function navigateDetailsPage(item: any) {
-        navigation.navigate('Detail', { id: item.id })
+        navigation.navigate('Detail' as never, { id: item.id } as never)
+    }
+
+    function handleSearchMovie() {
+
+        if (input === '') return;
+        navigation.navigate('Search' as never, { name: input } as never)
+        setInput('');
     }
 
     return (
@@ -104,8 +112,10 @@ const Home: React.FC<HomeProps> = () => {
                         <Input
                             placeholder="Ex Vingadores"
                             placeholderTextColor="#ddd"
+                            value={input}
+                            onChangeText={(text) => setInput(text)}
                         />
-                        <SearchButton>
+                        <SearchButton onPress={handleSearchMovie}>
                             <Feather name="search" size={30} color="#fff" />
                         </SearchButton>
                     </SearchContainer>
