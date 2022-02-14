@@ -7,6 +7,8 @@ import Genres from '../../components/Genres';
 import { ScrollView, Modal } from 'react-native';
 import ModalLink from '../../components/ModalLink';
 
+import { saveMovie, hasMovie, deleteMovie } from '../../utils/storage';
+
 import {
     Container,
     Header,
@@ -25,7 +27,6 @@ interface DetailProps {
     data: any;
     link: string;
     title: string;
-    closeModal: () => void;
 }
 
 const Detail: React.FC<DetailProps> = () => {
@@ -35,6 +36,7 @@ const Detail: React.FC<DetailProps> = () => {
 
     const [movie, setMovie] = useState<any>({});
     const [openLink, setOpenLink] = useState<boolean>(false);
+    const [favoritedMovie, setFavoritedMovie] = useState<boolean>(false);
 
     useEffect(() => {
         let isActive = true;
@@ -53,6 +55,9 @@ const Detail: React.FC<DetailProps> = () => {
 
             if (isActive) {
                 setMovie(response.data);
+
+                const isFavorite = await hasMovie(response.data)
+                setFavoritedMovie(isFavorite)
             }
         }
 
@@ -65,14 +70,28 @@ const Detail: React.FC<DetailProps> = () => {
         }
     }, [])
 
+    async function handleFavoriteMovie(movie) {
+
+        if (favoritedMovie) {
+            await deleteMovie(movie.id);
+            setFavoritedMovie(false);
+            alert('Filme removido da lista')
+        } else {
+
+            await saveMovie('@primereact', movie)
+            setFavoritedMovie(true);
+            alert('filme salvo na lista')
+        }
+    }
+
     return (
         <Container>
             <Header>
                 <HeaderButton activeOpacity={0.7} onPress={() => navigation.goBack()}>
                     <Feather name='arrow-left' size={28} color="#fff" />
                 </HeaderButton>
-                <HeaderButton>
-                    <Ionicons name='bookmark' size={28} color="#fff" />
+                <HeaderButton onPress={() => handleFavoriteMovie(movie)}>
+                    <Ionicons name={favoritedMovie ? 'bookmark' : 'bookmark-outline'} size={28} color="#fff" />
                 </HeaderButton>
             </Header>
 
@@ -104,7 +123,7 @@ const Detail: React.FC<DetailProps> = () => {
             <ListGenres
                 data={movie?.genres}
                 horizontal={true}
-                showHorizontalScrollIndicator={false}
+                showsHorizontalScrollIndicator={false}
                 keyExtractor={(item: any) => String(item.id)}
                 renderItem={({ item }: any) => <Genres data={item} />}
             />
